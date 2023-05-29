@@ -1,4 +1,4 @@
-# SPPU_SE_COMP_Lab_SEMO2
+# SPPU_SE_COMP_Lab_SEMO2_DSALAB
 
 **1.Beginning with an empty binary search tree. Construct the binary search tree by inserting the values in given order.
 After constructing binary search tree perform following operations 1) Insert a new node 2) Find numbers of node in longest 
