@@ -49,7 +49,7 @@ public:
         {
             return new Node(val);
         }
-        if (val <= rt->data)
+        if (val < rt->data)
         { // left side me insert karo
             rt->left = insertBST(rt->left, val);
         }
@@ -92,6 +92,8 @@ public:
 
         return maxCount;
     }
+
+   
 
     // Display function for BST
     void inorder(Node *rt)
@@ -274,7 +276,7 @@ int main()
                 cin >> val;
                 if (obj.root == NULL)
                 {
-                   obj.root = obj.insertBST(obj.root, val);
+                    obj.root = obj.insertBST(obj.root, val);
                 }
                 else
                 {

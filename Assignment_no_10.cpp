@@ -65,10 +65,8 @@ public:
 
 
        arr[1] = arr[size];
-
-
+       
        size--;
-
 
        int i = 1;
        while (i < size)
