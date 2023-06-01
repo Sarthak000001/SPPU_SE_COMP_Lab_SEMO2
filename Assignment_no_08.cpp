@@ -5,18 +5,15 @@
 // Assignment No : 8
 // ==============================================================
 
-
 // Problem Statement :
 // Given sequence k = k1 <k2 < ... < kn of n sorted keys, with a search
 // probability pi for each key ki . Build the Binary search tree that has
 // the least search cost given the access probability for each key.
 
-
 #include <iostream>
 #include <bits/stdc++.h>
 using namespace std;
 const int MAX = 200;
-
 
 class Node
 {
@@ -38,7 +35,6 @@ public:
     friend class OBST;
 };
 
-
 class OBST
 {
 public:
@@ -47,14 +43,16 @@ public:
     int *key;
     int *freq;
     int size;
-    Node *start;
+    Node *start, *start2;
     OBST()
     {
         start = NULL;
+        start2 = NULL;
     }
     OBST(int n)
     {
         start = NULL;
+        start2 = NULL;
         this->size = n;
         key = new int[size];
         freq = new int[size];
@@ -88,28 +86,22 @@ public:
         return s;
     }
 
-
     int optCost(int i, int j)
     {
-      
-        if(j < i)
+
+        if (j < i)
         {
             return 0;
         }
-        if(i==j)
-        {
-            return freq[i];
-        }
-        if(cost[i][j])
+
+        if (cost[i][j])
         {
             return cost[i][j];
         }
 
         int f_sum = getSum(i, j);
 
-
         int mini = INT_MAX;
-
 
         for (int k = i; k <= j; k++)
         {
@@ -121,7 +113,6 @@ public:
                 cost[i][j] = c;
             }
         }
-
 
         return cost[i][j];
     }
@@ -137,9 +128,27 @@ public:
             cout << "\n";
         }
     }
+
+     //recursively
+    void buildTreeUtil(Node *&currNode, int i, int j) 
+    {
+        if (i > j)
+            return;
+
+        int l = root[i][j];
+        currNode = new Node(root[l][j]);
+
+        buildTreeUtil(currNode->left, i, l - 1);
+        buildTreeUtil(currNode->right, l + 1, j);
+    }
+
+    void buildStart()
+    {
+        buildTreeUtil(start2, 0, size - 1);
+    }
+
     void buildTree()
     {
-
 
         stack<pair<Node *, pair<int, int>>> st;
         if (start == NULL)
@@ -172,62 +181,60 @@ public:
         }
     }
 
-
     void printLevelOrder(Node *root)
     {
         if (root == NULL)
             return;
         queue<Node *> q;
 
-
         q.push(root);
-
 
         while (q.empty() == false)
         {
-
 
             Node *node = q.front();
             cout << key[node->data] << " ";
             q.pop();
 
-
             if (node->left != NULL)
                 q.push(node->left);
-
 
             if (node->right != NULL)
                 q.push(node->right);
         }
     }
-    void printlevel()
+    void printlevel1()
     {
         printLevelOrder(start);
     }
+    void printlevel2()
+    {
+        printLevelOrder(start2);
+    }
 };
-
 
 int main()
 {
 
-
     int n;
     cout << "Enter the no. of keys: ";
     cin >> n;
-    cout << "\n";
     OBST tree(n);
     tree.getValue();
     tree.getCost(n);
+    cout << "First \n";
     tree.buildTree();
-    // tree.print();
-    tree.printlevel();
+    tree.printlevel1();
+    cout << "\nSecond \n";
+    tree.buildStart();
+    tree.printlevel2();
     return 0;
 }
 
-//ex1
-// keys[] = {10, 12}, freq[] = {34, 50}
-// The cost of tree I is 34*1 + 50*2 = 134
-// The cost of tree II is 50*1 + 34*2 = 118 
-//ex2
-// keys[] = {10, 12, 20}, freq[] = {34, 8, 50}
-// 1*50 + 2*34 + 3*8 = 142 
+// ex1
+//  keys[] = {10, 12}, freq[] = {34, 50}
+//  The cost of tree I is 34*1 + 50*2 = 134
+//  The cost of tree II is 50*1 + 34*2 = 118
+// ex2
+//  keys[] = {10, 12, 20}, freq[] = {34, 8, 50}
+//  1*50 + 2*34 + 3*8 = 142
