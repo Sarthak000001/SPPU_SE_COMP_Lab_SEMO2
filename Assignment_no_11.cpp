@@ -5,184 +5,207 @@
 // Batch : G1
 // ==============================================================
 
+
 #include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
-
+#include <cstring>
 using namespace std;
 
 class Student
 {
-    int rollNumber;
-    string name;
-    string division;
-    string address;
+    char name[20];
+    int roll;
+    friend class Database;
 
-    public:
-        void addStudentRecord() 
+public:
+    void input()
     {
-        ofstream file("student_data.txt", ios::app); // Open the file in append mode
-
-        if (!file) {
-            cout << "Error opening file!" << endl;
-            return;
-        }
-
-        Student student;
-        cout << "Enter Roll Number: ";
-        cin >> student.rollNumber;
-        cout << "Enter Name: ";
-        cin.ignore();
-        getline(cin, student.name);
-        cout << "Enter Division: ";
-        getline(cin, student.division);
-        cout << "Enter Address: ";
-        getline(cin, student.address);
-
-        // Write the student record to the file
-        file << student.rollNumber << "," << student.name << "," << student.division << "," << student.address << endl;
-
-        file.close();
-        cout << "Student record added successfully!" << endl;
+        cout << "Enter the Name : " << endl;
+        cin >> name;
+        cout << "Enter Roll NO. :  " << endl;
+        cin >> roll;
     }
-
-    void deleteStudentRecord() 
+    void show()
     {
-        ifstream inFile("student_data.txt"); // Open the file for reading
-        ofstream outFile("temp.txt"); // Open a temporary file for writing
-
-        if (!inFile) {
-            cout << "Error opening file!" << endl;
-            return;
-        }
-
-        int rollNumber;
-        cout << "Enter the Roll Number of the student to delete: ";
-        cin >> rollNumber;
-
-        bool found = false;
-        string line;
-
-        // Read each line from the file
-        while (getline(inFile, line)) 
-        {
-            // Split the line into fields
-            size_t pos = line.find(',');
-            int fileRollNumber = stoi(line.substr(0, pos));
-
-            if (fileRollNumber == rollNumber) {
-                found = true;
-                continue; // Skip writing this line to the temporary file
-            }
-
-            outFile << line << endl;
-        }
-
-        inFile.close();
-        outFile.close();
-
-        if (found) 
-        {
-            remove("student_data.txt");              // Delete the original file
-            rename("temp.txt", "student_data.txt");  // Rename the temporary file to the original file
-            cout << "Student record deleted successfully!" << endl;
-        } else {
-            remove("temp.txt"); // Delete the temporary file
-            cout << "Student record not found!" << endl;
-        }
+        cout << "\t" << name << "\t" << roll << endl;
     }
-
-// Function to display information of a particular student
-        void displayStudentRecord() 
-        {
-            ifstream file("student_data.txt");
-
-            if (!file) 
-            {
-                cout << "Error opening file!" << endl;
-                return;
-            }
-
-            int rollNumber;
-            cout << "Enter the Roll Number of the student to display: ";
-            cin >> rollNumber;
-
-            bool found = false;
-            string line;
-
-            // Read each line from the file
-            while (getline(file, line)) 
-            {
-                // Split the line into fields
-                size_t pos = line.find(',');
-                int fileRollNumber = stoi(line.substr(0, pos));
-
-                if (fileRollNumber == rollNumber) {
-                    found = true;
-
-                    // Extract the student details from the line
-                    Student student;
-                    student.rollNumber = fileRollNumber;
-                    student.name = line.substr(pos + 1, line.find(',', pos + 1) - pos - 1);
-                    pos = line.find(',', pos + 1);
-                    student.division = line.substr(pos + 1, line.find(',', pos + 1) - pos - 1);
-                    pos = line.find(',', pos + 1);
-                    student.address = line.substr(pos + 1);
-
-                    // Display the student details
-                    cout << "Roll Number: " << student.rollNumber << endl;
-                    cout << "Name: " << student.name << endl;
-                    cout << "Division: " << student.division << endl;
-                    cout << "Address: " << student.address << endl;
-
-                    break;
-                }
-            }
-
-            file.close();
-
-            if (!found) 
-            {
-                cout << "Student record not found!" << endl;
-            }
-        }
+    void modification()
+    {
+        cout << "Enter the new Name : " << endl;
+        cin >> name;
+    }
 };
+class Database
+{
+    char fname[20];
 
+public:
+    Database(char f[])
+    {
+        strcpy(fname, f);
+    }
+    void add(int n)
+    {
+        ofstream fout;
+        fout.open(fname, ios::app);
+        Student s;
+        for (int i = 0; i < n; i++)
+        {
+            s.input();
+            fout.write((char *)&s, sizeof(s));
+        }
+        fout.close();
+    }
+    void display()
+    {
+        ifstream fin;
+        fin.open(fname, ios::in);
+        Student s;
+        while (fin.read((char *)&s, sizeof(s)))
+        {
+            s.show();
+            cout << endl;
+        }
+        fin.close();
+    }
+    void del(int rn)
+    {
 
+        int flag = 0;
+        ifstream file1;
+        ofstream file2;
+        file1.open(fname, ios::in);
+        file2.open("temp.txt", ios::out);
 
-int main() {
-    int choice;
-    Student s1;
-
-    do {
-        cout << "========== Student Information System ==========" << endl<<endl;;
-        cout << "1. Add Student Record" << endl;
-        cout << "2. Delete Student Record" << endl;
-        cout << "3. Display Student Record" << endl;
-        cout << "4. Exit" << endl;
-        cout << "Enter your choice: ";
-        cin >> choice;
-
-        switch (choice) {
-            case 1:
-                s1.addStudentRecord();
-                break;
-            case 2:
-                s1.deleteStudentRecord();
-                break;
-            case 3:
-                s1.displayStudentRecord();
-                break;
-            case 4:
-                cout << "Exiting the program..." << endl;
-                break;
-            default:
-                cout << "Invalid choice. Please try again." << endl;
+        Student s;
+        while (file1.read((char *)&s, sizeof(s)))
+        {
+            if (s.roll != rn)
+            {
+                file2.write((char *)&s, sizeof(s));
+            }
+            else if (s.roll == rn)
+            {
+                flag = 1;
+            }
         }
 
-        cout << endl;
-    } while (choice != 4);
+        if (flag == 0)
+        {
+            cout << "Record is not present in the data base " << endl;
+        }
+        file1.close();
+        file2.close();
+        remove(fname);
+        rename("temp.txt", fname);
+    }
+    void update(int rn)
+    {
+        int flag = 0;
+        ifstream file1;
+        ofstream file2;
+        file1.open(fname, ios::in);
+        file2.open("temp.txt", ios::out);
 
+        Student s;
+        while (file1.read((char *)&s, sizeof(s)))
+        {
+            if (s.roll == rn)
+            {
+                s.modification();
+                flag = 1;
+            }
+            file2.write((char *)&s, sizeof(s));
+        }
+
+        if (flag == 0)
+        {
+            cout << "Record is not present in the data base " << endl;
+        }
+        file1.close();
+        file2.close();
+        remove(fname);
+        rename("temp.txt", fname);
+    }
+    void Search(int rn)
+    {
+        int flag = 0;
+        ifstream file;
+        file.open(fname, ios::in);
+        Student s;
+
+        while (file.read((char *)&s, sizeof(s)))
+        {
+            if (s.roll == rn)
+            {
+                flag = 1;
+                break;
+            }
+        }
+        if (flag)
+        {
+            cout << "Record is Found " << endl;
+            s.show();
+        }
+        else
+        {
+            cout << "Record is not Found " << endl;
+        }
+    }
+};
+int main()
+{
+    char name[20];
+    cout << "Enter the fiel name : ";
+    cin >> name;
+    cout << "\n";
+    Database d(name);
+    int n;
+    while (1)
+    {
+        cout << "1.Add record " << endl;
+        cout << "2.Display record" << endl;
+        cout << "3.Search record" << endl;
+        cout << "4.Delete record" << endl;
+        cout << "5.Update record" << endl;
+        cout << "6.Exit" << endl;
+        int c;
+        cout << "Enter your choice : " << endl;
+        cin >> c;
+        if (c == 1)
+        {
+            cout << "Enter the total no. of students  " << endl;
+            cin >> n;
+            d.add(n);
+        }
+        else if (c == 2)
+        {
+            d.display();
+        }
+        else if (c == 3)
+        {
+            cout << "Enter the Roll No. " << endl;
+            cin >> n;
+            d.Search(n);
+        }
+        else if (c == 4)
+        {
+            cout << "Enter the Roll No " << endl;
+            cin >> n;
+            d.del(n);
+        }
+        else if (c == 5)
+        {
+            cout << "Enter the Roll No " << endl;
+            cin >> n;
+            d.update(n);
+        }
+        else
+        {
+            cout << "Thank you !" << endl;
+            break;
+        }
+    }
     return 0;
 }

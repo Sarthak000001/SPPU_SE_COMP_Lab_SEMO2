@@ -59,7 +59,7 @@ public:
    {
        cout << "------LL Rotation Applied-------" << endl;
 
-
+   
        Node *newRoot = node->right;
        node->right = newRoot->left;
        newRoot->left = node;
@@ -67,7 +67,12 @@ public:
        updateHeight(newRoot);
        return newRoot;
    }
-
+   //LL rotation 
+  //        n            n      nw               nw
+  //         \            \       \             /  \
+  //          nw    =>     x       y    =>     n    y
+  //          / \                               \
+  //         x   y                               x
 
    Node *rotateRight(Node *node)
    {

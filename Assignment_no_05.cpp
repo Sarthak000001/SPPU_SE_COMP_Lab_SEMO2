@@ -99,7 +99,7 @@ public:
    void del(string key)
    {
        Node *ptr = head;
-       if (ptr->key == key)
+       if(ptr->key == key)
        {
            if (head == tail)
            {
@@ -112,13 +112,13 @@ public:
            return;
        }
        Node *follow = ptr;
-       while (ptr->key != key || ptr == nullptr)
+       while(ptr->key != key || ptr == nullptr)
        {
            follow = ptr;
            ptr = ptr->next;
        }
        follow->next = ptr->next;
-       if (ptr == tail)
+       if(ptr == tail)
        {
            tail = follow;
        }

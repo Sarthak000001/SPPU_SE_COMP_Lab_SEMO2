@@ -16,6 +16,7 @@ public:
     int addr;
     Hashtable();
 } HT[10];
+
 Hashtable ::Hashtable()
 {
     for (int i = 0; i < 10; i++)
@@ -142,14 +143,40 @@ void Employee ::delete_Rec()
 int main()
 {
     Employee E;
-    cout << "\n\n .......A] Write Records in Direct Access File........";
-    E.add_Rec();
-    cout << "\n\n .......B] Read Records from Direct Access File........";
-    E.display_Rec();
-    cout << "\n\n .......C] Search Record in Direct Access File........";
-    E.search_Rec();
-    cout << "\n\n .......D] Delete Record from Direct Access File........";
-    E.delete_Rec();
+    while (1)
+    {
+        cout << "\n--------------------Menu----------------------";
+        cout << "\n\n ......1] Write Records in Direct Access File........";
+        cout << "\n\n .......2] Read Records from Direct Access File........";
+        cout << "\n\n .......3] Search Record in Direct Access File........";
+        cout << "\n\n .......4] Delete Record from Direct Access File........";
+        cout << "\n\n .......5] Exit.........................................";
+        cout << "\nEnter your Option  : ";
+        int c;
+        cin >> c;
+        cout << "\n";
+        if (c == 1)
+        {
+            E.add_Rec();
+        }
+        else if (c == 2)
+        {
+            E.display_Rec();
+        }
+        else if (c == 3)
+        {
+            E.search_Rec();
+        }
+        else if (c == 4)
+        {
+            E.delete_Rec();
+        }
+        else
+        {
+            cout << "Thank You\n";
+            break;
+        }
+    }
     cout << "\n\n";
     return 0;
 }

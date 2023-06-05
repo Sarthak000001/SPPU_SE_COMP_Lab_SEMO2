@@ -147,6 +147,7 @@ public:
         buildTreeUtil(start2, 0, size - 1);
     }
 
+    //iteratively
     void buildTree()
     {
 
