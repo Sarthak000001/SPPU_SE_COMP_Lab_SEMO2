@@ -127,7 +127,7 @@ public:
             cout << "\tId : " << ht[it].id << endl;
             cout << "\tName : " << ht[it].name << endl;
             cout << "\ttelephone No. : " << ht[it].tele << endl;
-            cout << "comparsion : " << comparsion << endl;
+            cout << "\tcomparsion : " << comparsion << endl;
             cout << "==================================\n";
             return;
         }

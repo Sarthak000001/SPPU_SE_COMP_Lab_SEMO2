@@ -93,8 +93,6 @@ public:
         return maxCount;
     }
 
-   
-
     // Display function for BST
     void inorder(Node *rt)
     { // base case
@@ -177,75 +175,57 @@ public:
         return SearchInbst(root->right, key);
     }
 
-    // Delete function
-    Node *finalright(Node *root)
+    Node *deleteNode(Node *root, int val)
     {
-        Node *curr = root;
-        while (curr->right != NULL)
+        // base case
+        if (root == NULL)
+            return root;
+
+        if (root->data == val)
         {
-            curr = curr->right;
+            // 0 child
+            if (root->left == NULL && root->right == NULL)
+            {
+                delete root;
+                return NULL;
+            }
+
+            // 1 child
+            // left child
+            if (root->left != NULL && root->right == NULL)
+            {
+                Node *temp = root->left;
+                delete root;
+                return temp;
+            }
+            // right child
+            if (root->left == NULL && root->right != NULL)
+            {
+                Node *temp = root->right;
+                delete root;
+                return temp;
+            }
+
+            // 2 child
+            if (root->left != NULL && root->right != NULL)
+            {
+                int mini = Minvalue(root->right);
+                root->data = mini;
+                root->right = deleteNode(root->right, mini);
+                return root;
+            }
         }
-        return curr;
-    }
-    Node *helper(Node *root)
-    {
-        if (root->left == NULL)
+        else if (root->data > val)
         {
-            return root->right;
-        }
-        else if (root->right == NULL)
-        {
-            return root->left;
+            // left part me jao
+            root->left = deleteNode(root->left, val);
+            return root;
         }
         else
         {
-            Node *rightChild = root->right;
-            Node *lastRightChild = finalright(root->left);
-            lastRightChild->right = rightChild;
-            return root->left;
+            root->right = deleteNode(root->right, val);
+            return root;
         }
-    }
-    Node *deleteNode(Node *root, int key)
-    {
-
-        if (root == NULL)
-        {
-            return NULL;
-        }
-
-        if (root->data == key)
-        {
-            return helper(root);
-        }
-
-        Node *dummy = root;
-        while (root != NULL)
-        {
-            if (root->data > key)
-            {
-                if (root->left != NULL && root->left->data == key)
-                {
-                    root->left = helper(root->left);
-                }
-                else
-                {
-                    root = root->left;
-                }
-            }
-            else
-            {
-                if (root->right != NULL && root->right->data == key)
-                {
-                    root->right = helper(root->right);
-                }
-                else
-                {
-                    root = root->right;
-                }
-            }
-        }
-
-        return dummy;
     }
 };
 
