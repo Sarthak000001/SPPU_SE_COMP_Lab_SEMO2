@@ -8,73 +8,6 @@
 #include <iostream>
 #include <string.h>
 using namespace std;
-#define m 10
-
-template <class T>
-class Stack
-{
-	T a[m];
-	int top;
-
-public:
-	Stack()
-	{
-		top = -1;
-	}
-
-	void push(T temp)
-	{
-		if (top == m - 1)
-		{
-			// cout<<"Overflow"<<endl;
-			return;
-		}
-		else
-		{
-			top++;
-			a[top] = temp;
-		}
-	}
-
-	T pop()
-	{
-		if (top == -1)
-		{
-			// cout<<"Underflow"<<endl;
-		}
-		T temp = a[top];
-		top--;
-		return temp;
-	}
-
-	bool is_empty()
-	{
-		if (top == -1)
-		{
-			return 1;
-		}
-		return 0;
-	}
-
-	bool inStack(T edge)
-	{
-		string s1 = edge.sd;
-		for (int i = 0; i <= top; i++)
-		{
-			if (s1 == a[i].sd)
-			{
-				if (s1 < a[i].sd)
-				{
-					a[i].sd = s1;
-					return 1;
-				}
-				return 1;
-			}
-		}
-
-		return 0;
-	}
-};
 
 class Graph
 {
@@ -213,55 +146,55 @@ public:
 		// print the final MST
 		printMST(parent);
 	}
-	 int find(int i, int parent[])
-    {
-        while (parent[i] != i)
-        {
-            i = parent[i];
-        }
-        return i;
-    }
-    void union1(int i, int j, int parent[])
-    {
-        int a = find(i, parent);
-        int b = find(j, parent);
-        parent[a] = b;
-    }
-    void Kruskal()
-    {
-        int parent[vertices];
-        int minCost = 0;
+	int find(int i, int parent[])
+	{
+		while (parent[i] != i)
+		{
+			i = parent[i];
+		}
+		return i;
+	}
+	void union1(int i, int j, int parent[])
+	{
+		int a = find(i, parent);
+		int b = find(j, parent);
+		parent[a] = b;
+	}
+	void Kruskal()
+	{
+		int parent[vertices];
+		int minCost = 0;
 
-        for (int i = 0; i < vertices; i++)
-        {
-            parent[i] = i;
-        }
-        int edgeCount = 0;
-        while (edgeCount < vertices - 1)
-        {
-            int min = INT_MAX, a = -1, b = -1;
-            for (int i = 0; i < vertices; i++)
-            {
-                for (int j = 0; j < vertices; j++)
-                {
-                    if (find(i, parent) != find(j, parent) && graph[i][j] < min && graph[i][j]!=0)
-                    {
-                        min = graph[i][j];
-                        a = i;
-                        b = j;
-                    }
-                }
-            }
+		for (int i = 0; i < vertices; i++)
+		{
+			parent[i] = i;
+		}
+		int edgeCount = 0;
+		while (edgeCount < vertices - 1)
+		{
+			int min = INT_MAX, a = -1, b = -1;
+			for (int i = 0; i < vertices; i++)
+			{
+				for (int j = 0; j < vertices; j++)
+				{
+					if (find(i, parent) != find(j, parent) && graph[i][j] < min && graph[i][j] != 0)
+					{
+						min = graph[i][j];
+						a = i;
+						b = j;
+					}
+				}
+			}
 
-            union1(a, b, parent);
-            edgeCount++;
-            cout << "\nEdge " << edgeCount << " | " << a << " : " << b << " | ";
-            cout << "Cost = " << min << endl;
+			union1(a, b, parent);
+			edgeCount++;
+			cout << "\nEdge " << edgeCount << " | " << a << " : " << b << " | ";
+			cout << "Cost = " << min << endl;
 
-            minCost += min;
-        }
-        cout << "Total cost of MST " << minCost << endl;
-    }
+			minCost += min;
+		}
+		cout << "Total cost of MST " << minCost << endl;
+	}
 };
 
 int main()

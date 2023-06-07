@@ -5,284 +5,335 @@
 // Batch : G1
 // ==============================================================
 
+// Problem Statement :
+//   Represent a given graph using adjacency list to perform DFS and BFS.
+//   Use the map of the area around the college as the graph.
+//   Identify the prominent land marks as nodes and perform DFS and BFS on that.
+
 #include <iostream>
-#include <queue>
-#include <stack>
-#include <unordered_map>
 using namespace std;
+#define size 20
 
 class Node
 {
-    int val;
-    string vertexName;
+    int x;
     Node *next;
+    friend class Graph;
 
 public:
-    Node(int n, string name)
+    Node(int d = 0)
     {
-        val = n;
-        vertexName = name;
+        this->x = d;
         next = NULL;
     }
-    friend class LL;
-    friend class Graph;
 };
 
-class LL
+class Stack
 {
+    int top;
+    int s[size];
+
 public:
-    Node *head;
-    string mainVertexName;
-    int mainVal;
-    LL()
+    Stack() { top = -1; }
+    void push(int val)
     {
-        mainVertexName = "";
-        mainVal = 0;
-        head = NULL;
-    }
-
-    void insertEnd(int num, string name)
-    {
-        Node *temp = new Node(num, name);
-        Node *p = NULL;
-
-        if (head == NULL)
+        if (top == size - 1)
         {
-            head = temp;
+            cout << "Stack Overflow" << endl;
         }
         else
         {
-            p = head;
-
-            while (p->next != NULL)
-            {
-                p = p->next;
-            }
-            p->next = temp;
+            top++;
+            s[top] = val;
         }
     }
-
-    void displayList()
+    int pop()
     {
-        Node *p = head;
-        if (head == NULL)
+        int temp;
+        if (top == -1)
         {
+            cout << "Stack Underflow" << endl;
+        }
+        else
+        {
+            temp = s[top];
+            top--;
+            return temp;
+        }
+    }
+    bool isempty()
+    {
+        if (top == -1)
+        {
+            return 1;
+        }
+        return 0;
+    }
+};
+
+class Queue
+{
+    int front, rear;
+    int q[size];
+
+public:
+    Queue()
+    {
+        front = rear = -1;
+    }
+    bool isempty()
+    {
+        if (rear == -1 && front == -1)
+        {
+            return true;
+        }
+        return false;
+    }
+    bool isfull()
+    {
+        if (rear == size - 1)
+        {
+            return true;
+        }
+        return false;
+    }
+    void enqueue(int s)
+    {
+        if (isfull())
+        {
+            cout << "queue Overflow" << endl;
             return;
         }
-        while (p != NULL)
+        if (front == -1)
         {
-            cout << p->vertexName << " : " << p->val << ":->";
-            p = p->next;
+            front = 0;
+            rear = 0;
+            q[front] = s;
+        }
+        else
+        {
+            rear++;
+            q[rear] = s;
         }
     }
-
-    friend class Graph;
+    int dequeue()
+    {
+        int temp;
+        if (isempty())
+        {
+            cout << "queue underflow" << endl;
+        }
+        else
+        {
+            if (front == rear)
+            {
+                temp = q[front];
+                front = rear = -1;
+            }
+            else
+            {
+                temp = q[front];
+                front++;
+            }
+            return temp;
+        }
+    }
 };
 
 class Graph
 {
-    int totalV;
-    LL *tableVertex;
-    unordered_map<int, bool> visitedDfs;
+    Node *adjlist[10];
+    bool *visited;
+    int v, e;
+    string name[10];
 
 public:
-    Graph(int n)
+    Graph(int v, int e)
     {
-        this->totalV = n;
-        tableVertex = new LL[n];
+        this->v = v;
+        this->e = e;
+        visited = new bool[v];
+        for (int i = 0; i < v; i++)
+        {
+            adjlist[i] = NULL;
+            visited[i] = false;
+        }
     }
 
-    void InsertGraph()
+    void insert()
     {
-        // 1st -> name of main vertex
-        // 2nd -> adjacent neighbours of each main vertex
-
-        for (int i = 0; i < this->totalV; i++)
+        int src, dest;
+        string n1, n2;
+        cout << "Enter the names of places " << endl;
+        for (int i = 0; i < v; i++)
         {
-            string name_;
-            cout << "Enter name of " << i << " vertex : ";
-            cin >> name_;
-
-            tableVertex[i].mainVertexName = name_;
-            tableVertex[i].mainVal = i;
+            cin >> name[i];
         }
-
-        // for adjacent Vertices
-        for (int i = 0; i < this->totalV; i++)
+        for (int i = 0; i < e; i++)
         {
+            cout << "Enter the src and dest place " << endl;
+            cin >> n1 >> n2;
 
-            int adjnum;
-            cout << "Enter number of adjacent vertices of {" << tableVertex[i].mainVertexName << "}:";
-            cin >> adjnum;
-            for (int j = 0; j < adjnum; j++)
+            for (int i = 0; i < v; i++)
             {
-                string adjname_;
-                cout << "Enter name of " << i << " neighbour : ";
-                cin >> adjname_;
-
-                // find value of adjname vertex;
-
-                int k = 0;
-                bool isFound = false;
-                while (k <= totalV)
+                if (n1 == name[i])
                 {
-                    if (tableVertex[k].mainVertexName == adjname_)
-                    {
-                        isFound = true;
-                        break;
-                    }
-                    k++;
+                    src = i;
+                    break;
                 }
+            }
+            for (int i = 0; i < v; i++)
+            {
+                if (n2 == name[i])
+                {
+                    dest = i;
+                    break;
+                }
+            }
 
-                // insert k as value
-                if (isFound)
+            Node *t1 = new Node(src);
+            Node *t2 = new Node(dest);
+            if (adjlist[src] == NULL)
+            {
+                adjlist[src] = t1;
+                adjlist[src]->next = t2;
+            }
+            else
+            {
+                Node *head = adjlist[src];
+                while (head->next != NULL)
                 {
-                    tableVertex[i].insertEnd(k, adjname_);
+                    head = head->next;
                 }
-                else
-                {
-                    cout << "Invalid Input" << endl;
-                }
+                head->next = t2;
             }
         }
     }
-
-    void displayGraph()
+    void display()
     {
-        for (int i = 0; i < totalV; i++)
+        Node *temp;
+        for (int i = 0; i < v; i++)
         {
-
-            cout << "[ " << tableVertex[i].mainVertexName << " : " << tableVertex[i].mainVal << "]";
-            tableVertex[i].displayList();
+            temp = adjlist[i];
+            while (temp != NULL)
+            {
+                cout << name[temp->x] << " --> ";
+                temp = temp->next;
+            }
             cout << endl;
         }
     }
-
-    void BFS(string vertexStart)
+    void DFS(int s)
     {
-        unordered_map<int, bool> visited;
-        queue<int> q;
-        // check whether vertexStart is present or not
-        int k = 0, startVal;
-        bool isFound = false;
-        while (k <= totalV)
+        Stack st;
+        for (int i = 0; i < v; i++)
         {
-            if (tableVertex[k].mainVertexName == vertexStart)
-            {
-                isFound = true;
-                startVal = tableVertex[k].mainVal;
-                break;
-            }
-            k++;
+            visited[i] = false;
         }
 
-        // insert startVal as value
-        if (isFound)
+        Node *temp;
+        cout << name[s] << "--> ";
+        st.push(s);
+        visited[s] = true;
+
+        while (!st.isempty())
         {
-            q.push(startVal);
-            visited[startVal] = 1;
-            while (!q.empty())
+            int curr = st.pop();
+            if (visited[curr] == false)
             {
-                int frontNode = q.front();
-                q.pop();
-                // print node name;
-                cout << tableVertex[frontNode].mainVertexName << " ";
-                // traverse neighbours
-                Node *curr = tableVertex[frontNode].head;
-                while (curr != NULL)
+                cout << name[curr] << "--> ";
+                visited[curr] = true;
+            }
+
+            temp = adjlist[curr];
+            while (temp != NULL)
+            {
+                if (visited[temp->x] == false)
                 {
-                    if (!visited[curr->val])
-                    {
-                        q.push(curr->val);
-                        visited[curr->val] = true;
-                    }
-                    curr = curr->next;
+                    st.push(temp->x);
                 }
+                temp = temp->next;
             }
-        }
-        else
-        {
-            cout << "Invalid Input\n";
         }
     }
 
-    void subDfs(int val)
+    void BFS(int s)
     {
-        cout << tableVertex[val].mainVertexName << " ";
-        visitedDfs[val] = true;
-
-        // recursive call for each neighbour
-        Node *curr = tableVertex[val].head;
-        while (curr != NULL)
+        for (int i = 0; i < v; i++)
         {
-            if (!visitedDfs[curr->val])
-            {
-                subDfs(curr->val);
-            }
-            curr = curr->next;
-        }
-    }
-    void DFS(string name)
-    {
-        // check node and get its value
-        int k = 0, startVal;
-        bool isFound = false;
-        while (k <= totalV)
-        {
-            if (tableVertex[k].mainVertexName == name)
-            {
-                isFound = true;
-                startVal = tableVertex[k].mainVal;
-                break;
-            }
+            visited[i] = false;
         }
 
-        if (!visitedDfs[startVal])
+        Queue q;
+        visited[s] = true;
+        q.enqueue(s);
+        Node *temp;
+        int curr;
+        while (!q.isempty())
         {
-            subDfs(startVal);
+            curr = q.dequeue();
+
+            cout << name[curr] << "--> ";
+
+            temp = adjlist[curr];
+            while (temp != NULL)
+            {
+
+                if (visited[temp->x] == false)
+                {
+                    q.enqueue(temp->x);
+                    visited[temp->x] = true;
+                }
+                temp = temp->next;
+            }
         }
     }
 };
 
 int main()
 {
-    int N;
-    cout << "Enter no. of nodes : ";
-    cin >> N;
-
-    Graph g(N);
-
-    g.InsertGraph();
-
-    while (1)
+    int v, e;
+    int chc;
+    cout << "Enter the no. of nodes" << endl;
+    cin >> v;
+    cout << "Enter the no. of edges" << endl;
+    cin >> e;
+    Graph g(v, e);
+    do
     {
-        string str_;
-        cout << "\n1.Display\n2.BFS\n3.DFS\n4.Exit\n";
-        int c;
-        cin >> c;
-        if (c == 1)
+        cout << "Menu\n1.Read the graph\n2.Display the adjacency list\n3.DFS of the graph\n4.BFS of the graph\n5.Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> chc;
+        if (chc == 1)
         {
-            g.displayGraph();
+            g.insert();
+        }
+        else if (chc == 2)
+        {
+            g.display();
+        }
+        else if (chc == 3)
+        {
+            cout << "The DFS traversal is" << endl;
+            g.DFS(0);
             cout << endl;
         }
-        else if (c == 2)
+        else if (chc == 4)
         {
-            cout << "Enter vertex name to start BFS from : \n";
-            cin >> str_;
-            g.BFS(str_);
+            cout << "The BFS traversal is" << endl;
+            g.BFS(0);
+            cout << endl;
         }
-        else if (c == 3)
+        else if (chc == 5)
         {
-            cout << "Enter the vertex name to start DFS from : \n";
-            cin >> str_;
-            g.DFS(str_);
+            cout << "Thank You !" << endl;
+            return 0;
         }
         else
         {
-            cout << "\nThank you !\n";
-            break;
+            cout << "Invalid choice" << endl;
         }
-    }
+    } while (chc != 5);
 
     return 0;
 }

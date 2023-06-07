@@ -1,8 +1,14 @@
+// ==============================================================
+// Assignment No : 12
+// Name : Sarthak Nirgude
+// Roll No. : 21156
+// Batch : G1
+// ==============================================================
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #define SIZE 10
-
 using namespace std;
 
 class Student
@@ -141,8 +147,8 @@ public:
                 cin >> roll;
                 cout << "Enter Name: ";
                 cin >> name;
-                h.insert(roll, fout.tellp());
-                fout << roll << " : " << name << endl;
+                h.insert(roll, fout.tellp()); //!<-imp : insert in hashtable
+                fout << roll << " : " << name << endl; //!<-imp : insert in file
             }
         }
         fout.close();
@@ -218,7 +224,6 @@ public:
         ofstream fout;
         fin.open(fname, ios::in);
         fout.open("temp.txt", ios::out);
-        Student s;
         if (!fin || !fout)
             cout << "\nError in opening file" << endl;
         else
@@ -227,7 +232,8 @@ public:
             {
                 fin.getline(buffer, 100);
                 int r;
-                sscanf(buffer, "%d", &r);
+                //the sscanf function is used to extract an integer value from the buffer string and store it in the variable r
+                sscanf(buffer, "%d", &r); 
                 if (r != rn)
                     fout << buffer << endl;
             }
