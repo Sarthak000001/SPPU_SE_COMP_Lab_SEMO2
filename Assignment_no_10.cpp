@@ -22,7 +22,6 @@ class Heap
    int size;
    int n;
 
-
 public:
    Heap()
    {

@@ -179,7 +179,7 @@ public:
 		// Initialize all the arrays
 		for (int i = 0; i < vertices; i++)
 		{
-			key[i] = 999; // 999 represents an Infinite value
+			key[i] = 9999999; // 999 represents an Infinite value
 			visited[i] = false;
 			parent[i] = -1;
 		}
@@ -213,6 +213,55 @@ public:
 		// print the final MST
 		printMST(parent);
 	}
+	 int find(int i, int parent[])
+    {
+        while (parent[i] != i)
+        {
+            i = parent[i];
+        }
+        return i;
+    }
+    void union1(int i, int j, int parent[])
+    {
+        int a = find(i, parent);
+        int b = find(j, parent);
+        parent[a] = b;
+    }
+    void Kruskal()
+    {
+        int parent[vertices];
+        int minCost = 0;
+
+        for (int i = 0; i < vertices; i++)
+        {
+            parent[i] = i;
+        }
+        int edgeCount = 0;
+        while (edgeCount < vertices - 1)
+        {
+            int min = INT_MAX, a = -1, b = -1;
+            for (int i = 0; i < vertices; i++)
+            {
+                for (int j = 0; j < vertices; j++)
+                {
+                    if (find(i, parent) != find(j, parent) && graph[i][j] < min && graph[i][j]!=0)
+                    {
+                        min = graph[i][j];
+                        a = i;
+                        b = j;
+                    }
+                }
+            }
+
+            union1(a, b, parent);
+            edgeCount++;
+            cout << "\nEdge " << edgeCount << " | " << a << " : " << b << " | ";
+            cout << "Cost = " << min << endl;
+
+            minCost += min;
+        }
+        cout << "Total cost of MST " << minCost << endl;
+    }
 };
 
 int main()
@@ -244,6 +293,7 @@ int main()
 		{
 			g1.find_MST();
 			cout << endl;
+			g1.Kruskal();
 		}
 		else
 		{

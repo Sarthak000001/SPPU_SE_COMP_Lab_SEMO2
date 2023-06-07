@@ -5,7 +5,6 @@
 // Batch : G1
 // ==============================================================
 
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -47,7 +46,7 @@ public:
     }
     void add(int n)
     {
-        ofstream fout;
+        ofstream fout; //default mode is ios::out
         fout.open(fname, ios::app);
         Student s;
         for (int i = 0; i < n; i++)
@@ -59,7 +58,7 @@ public:
     }
     void display()
     {
-        ifstream fin;
+        ifstream fin; //default mode is ios::in
         fin.open(fname, ios::in);
         Student s;
         while (fin.read((char *)&s, sizeof(s)))

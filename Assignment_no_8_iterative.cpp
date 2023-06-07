@@ -112,7 +112,7 @@ public:
                 int j = i + m;     // ending key
                 int k = 0;         // root of optimal subtree
 
-                w[i][j] = w[i][j - 1] + p[j - 1] + q[j]; // wt of subtree with keys i to j
+                w[i][j] = w[i][j - 1] + p[j-1] + q[j]; // wt of subtree with keys i to j
                 for (int it = i + 1; it <= j; it++)      // iterate over possible roots
                 {
                     double sum = c[i][it - 1] + c[it][j]; // cost(left subtree) + cost(right subtree)
@@ -172,3 +172,15 @@ int main()
     cout << endl;
     return 0;
 }
+
+/*
+example : 
+key = {10,20,30,40};
+p = {3,3,1,1};
+q = {2,3,1,1,1};
+
+final
+w -> 16
+cost -> 32
+root -> 2
+*/

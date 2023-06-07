@@ -1,182 +1,292 @@
-// ==============================================================
-// Assignment No : 12
-// Name : Sarthak Nirgude
-// Roll No. : 21156
-// Batch : G1
-// ==============================================================
-
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <cstring>
+#define SIZE 10
+
 using namespace std;
 
-class Hashtable
+class Student
 {
 public:
-    int addr;
-    Hashtable();
-} HT[10];
+    int roll;
+    int loc;
 
-Hashtable ::Hashtable()
-{
-    for (int i = 0; i < 10; i++)
-        HT[i].addr = -1;
-}
+    Student(int r = 0, int l = 0)
+    {
+        roll = r;
+        loc = l;
+    }
 
-// Class for Direct Access File
-class Employee : public Hashtable
-{
-    int emp_id;
-    char salary[10];
-    char name[10];
-    char exp[10];
-
-public:
-    void add_Rec();     //...Add Records
-    void display_Rec(); //...Read Records
-    void search_Rec();  //...Search A Record
-    void delete_Rec();  //...Delete A Record
+    friend class Hash;
 };
 
-void Employee ::add_Rec()
+class Hash
 {
-    int index, count, tablesize = 10;
-    int location;
-    cout << "\n\n How many records..? : ";
-    cin >> count;
-    ofstream fout;
-    fout.open("FileDAF.txt", ios::out);
-    for (int i = 0; i < count; i++)
-    {
-        cout << "\n Enter Employee id: ";
-        cin >> emp_id;
-        cout << "\n Enter Employee name: ";
-        cin >> name;
-        cout << "\n Enter Employee salary: ";
-        cin >> salary;
-        cout << "\n Enter Experience: ";
-        cin >> exp;
-        location = fout.tellp();    // Return location
-        index = emp_id % tablesize; // Find index of Hashtable
-        HT[index].addr = location;  // Store location in Hashtable
-        // Write the Record in File
-        fout << emp_id << " " << name << " "
-             << "" << exp << " " << salary << endl;
-    }
-    fout.close();
-}
+    Student *arr;
 
-// Display records from the file
-void Employee ::display_Rec()
-{
-    char buffer[40];
-    int cnt = 1;
-    ifstream fin;
-    // Open File for Reading
-    fin.open("FileDAF.txt", ios::in);
-    // Read till End of the File
-    while (!fin.eof())
+public:
+    Hash()
     {
-        fin.getline(buffer, 40);
-        cout << "\n\n Record " << cnt << " : " << buffer;
-        cnt++;
-    }
-}
-// Search A Record Randomly
-// using Emp_No of Employee
-void Employee ::search_Rec()
-{
-    int id;
-    int tablesize = 10;
-    // Accept Emp_id to search
-    cout << "\n\t Enter Emp_id to search record: ";
-    cin >> id;
-    // Find index to get the address of record
-    int index = id % tablesize;
-    // read and store the address
-    int location = HT[index].addr;
-    // Open the file for reading
-    ifstream fin;
-    fin.open("FileDAF.txt", ios::in);
-    // go to the location
-    fin.seekg(location, ios::beg);
-    // Read from location
-    char buffer[40];
-    fin.getline(buffer, 40);
-    cout << "\n\t Found Record : " << buffer;
-}
-
-// To delete A Record from File.
-void Employee ::delete_Rec()
-{
-    int i, id;
-    int tablesize = 10;
-    cout << "\n\t Enter the Emp_id to delete: ";
-    cin >> id;
-    int index = id % tablesize;
-    int location = HT[index].addr;
-    // Open the file for reading
-    ifstream fin;
-    fin.open("FileDAF.txt", ios::in);
-    // go to the location
-    fin.seekg(location, ios::beg);
-    // Read from location
-    char buffer[40];
-    fin.getline(buffer, 40);
-    cout << "\n\t Deleted Record : " << buffer;
-    fin.close();
-    cout << "\n\t Remaining Records:- ";
-    // Open the file for reading
-    fin.open("FileDAF.txt", ios::in);
-    for (i = 0; i < 10; i++)
-    {
-        if (HT[i].addr != -1 && HT[i].addr != location)
+        arr = new Student[SIZE];
+        for (int i = 0; i < SIZE; i++)
         {
-            // Read from location
-            fin.seekg(HT[i].addr, ios::beg);
-            fin.getline(buffer, 40);
-            cout << "\n\t Record : " << buffer;
+            arr[i].roll = -1; // Initialize roll as -1 to represent an empty slot
+            arr[i].loc = -1;  // Initialize loc as -1 to represent an empty slot
         }
     }
-    fin.close();
-}
+
+    int hashFunction(int key)
+    {
+        return key % SIZE;
+    }
+
+    void show()
+    {
+        cout << "\nHashTable" << endl;
+        for (int i = 0; i < SIZE; i++)
+        {
+            if (arr[i].roll != -1)
+                cout << i << " - " << arr[i].roll << " : " << arr[i].loc << endl;
+        }
+        cout << endl;
+    }
+
+    void insert(int roll, int loc)
+    {
+        int hashIndex = hashFunction(roll);
+        int hashCopy = hashIndex;
+        do
+        {
+            if (arr[hashIndex].roll == -1) // If the slot is empty
+            {
+                arr[hashIndex].roll = roll;
+                arr[hashIndex].loc = loc;
+                break;
+            }
+            else
+            {
+                hashIndex = (hashIndex + 1) % SIZE; // Linear probing to find the next empty slot
+            }
+        } while (hashIndex != hashCopy);
+    }
+
+    int search(int rn)
+    {
+        int hashIndex = hashFunction(rn);
+        int hashCopy = hashIndex;
+        do
+        {
+            if (arr[hashIndex].roll == rn) // If the roll matches
+            {
+                return arr[hashIndex].loc;
+            }
+            else
+            {
+                hashIndex = (hashIndex + 1) % SIZE; // Linear probing to find the next slot
+            }
+        } while (hashIndex != hashCopy);
+        return -1; // Roll not found
+    }
+
+    void remove(int rn)
+    {
+        int hashIndex = hashFunction(rn);
+        int hashCopy = hashIndex;
+        do
+        {
+            if (arr[hashIndex].roll == rn) // If the roll matches
+            {
+                arr[hashIndex].roll = -1; // Mark the slot as empty
+                arr[hashIndex].loc = -1;
+                break;
+            }
+            else
+            {
+                hashIndex = (hashIndex + 1) % SIZE; // Linear probing to find the next slot
+            }
+        } while (hashIndex != hashCopy);
+    }
+};
+
+class File
+{
+    char fname[20];
+    char buffer[100];
+    Hash h;
+    int roll;
+    string name;
+
+public:
+    File(char f[])
+    {
+        strcpy(fname, f);
+    }
+
+    void write()
+    {
+        ofstream fout;
+        fout.open(fname, ios::out);
+
+        if (!fout)
+            cout << "\nError in opening file" << endl;
+        else
+        {
+            cout << "\nHow many records do you want to add? ";
+            int count;
+            cin >> count;
+            for (int i = 0; i < count; i++)
+            {
+                cout << "___________________\n";
+                cout << "\nEnter Roll: ";
+                cin >> roll;
+                cout << "Enter Name: ";
+                cin >> name;
+                h.insert(roll, fout.tellp());
+                fout << roll << " : " << name << endl;
+            }
+        }
+        fout.close();
+    }
+
+    void read()
+    {
+        ifstream fin;
+        fin.open(fname, ios::in);
+
+        if (!fin)
+            cout << "\nError in opening file" << endl;
+        else
+        {
+            int i = 0;
+            cout << "--------------Database----------------------" << endl;
+            while (!fin.eof())
+            {
+                fin.getline(buffer, 100);
+                cout << "Record: " << i + 1 << " " << buffer << endl;
+                i++;
+            }
+        }
+        fin.close();
+        h.show();
+    }
+
+    void search(int rn)
+    {
+        ifstream fin;
+        fin.open(fname, ios::in);
+
+        if (!fin)
+            cout << "\nError in opening file" << endl;
+        else
+        {
+            int loc = h.search(rn);
+            if (loc == -1)
+            {
+                cout << "\nRecord not found " << endl;
+                return;
+            }
+            fin.seekg(loc, ios::beg);
+            fin.getline(buffer, 40);
+            cout << "\nRecord found" << endl;
+            cout << buffer << endl;
+        }
+        fin.close();
+    }
+
+    void removeF(int rn)
+    {
+        ifstream fin;
+        fin.open(fname, ios::in);
+
+        if (!fin)
+            cout << "\nError in opening file" << endl;
+        else
+        {
+            int loc = h.search(rn);
+            if (loc == -1)
+            {
+                cout << "\nRecord not found " << endl;
+                return;
+            }
+            fin.seekg(loc, ios::beg);
+            fin.getline(buffer, 40);
+            cout << "\nRecord to be deleted" << endl;
+            cout << buffer << endl;
+        }
+        fin.close();
+
+        ofstream fout;
+        fin.open(fname, ios::in);
+        fout.open("temp.txt", ios::out);
+        Student s;
+        if (!fin || !fout)
+            cout << "\nError in opening file" << endl;
+        else
+        {
+            while (!fin.eof())
+            {
+                fin.getline(buffer, 100);
+                int r;
+                sscanf(buffer, "%d", &r);
+                if (r != rn)
+                    fout << buffer << endl;
+            }
+        }
+        fin.close();
+        fout.close();
+
+        remove(fname);
+        rename("temp.txt", fname);
+        h.remove(rn);
+    }
+};
+
 int main()
 {
-    Employee E;
+    char str[20];
+    cout << "Enter the file Name : ";
+    cin >> str;
+    cout << endl;
+    File f(str);
+
     while (1)
     {
-        cout << "\n--------------------Menu----------------------";
-        cout << "\n\n ......1] Write Records in Direct Access File........";
-        cout << "\n\n .......2] Read Records from Direct Access File........";
-        cout << "\n\n .......3] Search Record in Direct Access File........";
-        cout << "\n\n .......4] Delete Record from Direct Access File........";
-        cout << "\n\n .......5] Exit.........................................";
-        cout << "\nEnter your Option  : ";
+        cout << "\n------------------" << endl;
+        cout << "1.Create record " << endl;
+        cout << "2.Display record" << endl;
+        cout << "3.Search record" << endl;
+        cout << "4.Delete record" << endl;
+        cout << "5.Exit" << endl;
         int c;
+        cout << "Enter your choice : " << endl;
         cin >> c;
-        cout << "\n";
         if (c == 1)
         {
-            E.add_Rec();
+            f.write();
         }
         else if (c == 2)
         {
-            E.display_Rec();
+            f.read();
         }
         else if (c == 3)
         {
-            E.search_Rec();
+            cout << "Enter the roll : " << endl;
+            int r;
+            cin >> r;
+            f.search(r);
         }
         else if (c == 4)
         {
-            E.delete_Rec();
+            cout << "Enter the roll : " << endl;
+            int r;
+            cin >> r;
+            f.removeF(r);
         }
         else
         {
-            cout << "Thank You\n";
+            cout << "Thank you !" << endl;
             break;
         }
     }
-    cout << "\n\n";
     return 0;
 }
